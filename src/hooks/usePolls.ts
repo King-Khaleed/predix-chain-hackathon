@@ -1,116 +1,115 @@
 import { useCallback, useState } from 'react';
-import { ethers, BigNumber } from 'ethers';
+import toast from 'react-hot-toast';
+import { Contract } from 'ethers';
+import { Poll, PollSide } from '../types/poll';
 import useContract from './useContract';
-import { Poll, PollStatus, PollSide } from '../types/poll';
+import * as web3 from '../utils/web3';
 
 const usePolls = () => {
-    const contract = useContract();
+    const contract = useContract(); // The single source of truth for the contract
     const [loading, setLoading] = useState(false);
 
-    const getPolls = useCallback(async (): Promise<Poll[]> => {
-        if (!contract) return [];
+    // The generic handler now passes the contract to the web3 function
+    const handleInteraction = useCallback(async (
+        interaction: (contract: Contract, ...args: any[]) => Promise<any>,
+        args: any[],
+        messages: { loading: string; success: string; error: string; }
+    ) => {
+        if (!contract) {
+            toast.error("Please connect your wallet first. The contract is not available.");
+            return;
+        }
+
         setLoading(true);
         try {
-            const pollsCount = await contract.nextPollId();
-            const polls: Poll[] = [];
+            const promise = interaction(contract, ...args);
+            await toast.promise(promise, messages);
+        } catch (error: any) {
+            console.error(messages.error, error);
+            toast.error(error.message || "An unknown error occurred.");
+        } finally {
+            setLoading(false);
+        }
+    }, [contract]);
 
-            for (let i = 0; i < pollsCount; i++) {
-                const p = await contract.getPoll(i);
-                // The contract returns a tuple, so we map it to our Poll object
-                polls.push({
-                    id: i,
-                    creator: p.creator,
-                    question: p.question,
-                    deadline: p.deadline.toNumber(),
-                    resolveTime: p.resolveTime.toNumber(),
-                    outcome: p.outcome,
-                    status: p.status,
-                    totalStaked: p.totalStaked,
-                    yesStaked: p.yesStaked,
-                    noStaked: p.noStaked,
-                });
+    const createPoll = async (question: string, deadline: Date, resolveTime: Date) => {
+        await handleInteraction(
+            web3.createPoll,
+            [question, deadline, resolveTime],
+            {
+                loading: 'Submitting your new poll...',
+                success: 'Poll created successfully!',
+                error: 'Failed to create poll.',
             }
-            return polls.sort((a, b) => b.id - a.id); // Show newest first
-        } catch (error) {
-            console.error("Error fetching polls:", error);
+        );
+    };
+
+    const predict = async (pollId: number, side: PollSide, amount: string) => {
+        await handleInteraction(
+            web3.predict,
+            [pollId, side, amount],
+            {
+                loading: 'Casting your prediction...',
+                success: 'Prediction cast successfully!',
+                error: 'Failed to cast prediction.',
+            }
+        );
+    };
+
+    const resolvePoll = async (pollId: number, outcome: PollSide) => {
+        await handleInteraction(
+            web3.resolvePoll,
+            [pollId, outcome],
+            {
+                loading: 'Resolving poll...',
+                success: 'Poll resolved successfully!',
+                error: 'Failed to resolve poll.',
+            }
+        );
+    };
+
+    const claim = async (pollId: number) => {
+        await handleInteraction(
+            web3.claim,
+            [pollId],
+            {
+                loading: 'Claiming your reward...',
+                success: 'Reward claimed successfully!',
+                error: 'Failed to claim reward.',
+            }
+        );
+    };
+
+    // Read-only functions do not need to go through handleInteraction
+    const getPolls = useCallback(async (): Promise<Poll[]> => {
+        setLoading(true);
+        try {
+            // getPolls does not require a signer, so it can be called directly.
+            return await web3.getPolls();
+        } catch (error: any) {
+            console.error("Failed to get polls:", error);
+            toast.error(error.message);
             return [];
         } finally {
             setLoading(false);
         }
-    }, [contract]);
-
-    const createPoll = useCallback(async (question: string, deadline: number, resolveTime: number) => {
-        if (!contract) return;
+    }, []);
+    
+    const getUserStake = useCallback(async (pollId: number, userAddress: string) => {
+        if (!contract) return { yesStake: "0", noStake: "0" }; // Return default if contract not ready
         setLoading(true);
         try {
-            const tx = await contract.createPoll(question, deadline, resolveTime);
-            await tx.wait();
-        } catch (error) {
-            console.error("Error creating poll:", error);
-            throw error; // Re-throw to be caught in the component
+            return await web3.getUserStake(contract, pollId, userAddress);
+        } catch (error: any) {
+            console.error(error.message);
+            return { yesStake: "0", noStake: "0" };
         } finally {
             setLoading(false);
         }
     }, [contract]);
 
-    const predict = useCallback(async (pollId: number, side: PollSide, amount: string) => {
-        if (!contract) return;
-        setLoading(true);
-        try {
-            const stakeAmount = ethers.utils.parseEther(amount);
-            const tx = await contract.predict(pollId, side, { value: stakeAmount });
-            await tx.wait();
-        } catch (error) {
-            console.error("Error making prediction:", error);
-            throw error;
-        } finally {
-            setLoading(false);
-        }
-    }, [contract]);
 
-    const resolvePoll = useCallback(async (pollId: number, outcome: PollSide) => {
-        if (!contract) return;
-        setLoading(true);
-        try {
-            const tx = await contract.resolvePoll(pollId, outcome);
-            await tx.wait();
-        } catch (error) {
-            console.error("Error resolving poll:", error);
-            throw error;
-        } finally {
-            setLoading(false);
-        }
-    }, [contract]);
-
-    const claim = useCallback(async (pollId: number) => {
-        if (!contract) return;
-        setLoading(true);
-        try {
-            const tx = await contract.claim(pollId);
-            await tx.wait();
-        } catch (error) {
-            console.error("Error claiming winnings:", error);
-            throw error;
-        } finally {
-            setLoading(false);
-        }
-    }, [contract]);
-
-    const getUserStake = useCallback(async (pollId: number, userAddress: string): Promise<{yesStake: BigNumber, noStake: BigNumber}> => {
-        if (!contract) return { yesStake: BigNumber.from(0), noStake: BigNumber.from(0) };
-        try {
-            const stakes = await contract.getUserStake(pollId, userAddress);
-            return {
-                yesStake: stakes.yesStake,
-                noStake: stakes.noStake
-            };
-        } catch (error) {
-            console.error("Error fetching user stake:", error);
-            return { yesStake: BigNumber.from(0), noStake: BigNumber.from(0) };
-        }
-    }, [contract]);
-
-    return { loading, getPolls, createPoll, predict, resolvePoll, claim, getUserStake };
+    return { getPolls, createPoll, predict, resolvePoll, claim, getUserStake, loading };
 };
 
 export default usePolls;

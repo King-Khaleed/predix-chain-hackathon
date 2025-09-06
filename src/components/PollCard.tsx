@@ -3,18 +3,17 @@ import { ethers } from 'ethers';
 import { Poll, PollStatus, PollSide } from '../types/poll';
 import usePolls from '../hooks/usePolls';
 import useWallet from '../hooks/useWallet';
+import useContract from '../hooks/useContract'; // Import useContract
 import { ClockIcon, CheckCircleIcon, XCircleIcon, CurrencyDollarIcon, CubeTransparentIcon } from '@heroicons/react/24/outline';
 
 interface PollCardProps {
     poll: Poll;
 }
 
-// Helper to format time
-const formatTime = (timestamp: number) => new Date(timestamp * 1000).toLocaleString();
-
 const PollCard = ({ poll }: PollCardProps) => {
+    const contract = useContract(); // Get the contract to check its availability
     const { predict, resolvePoll, claim, loading } = usePolls();
-    const { address } = useWallet(); // Get the connected user's address
+    const { address, isConnected } = useWallet(); // Get wallet connection status
     const [amount, setAmount] = useState('0.01');
     const [error, setError] = useState('');
 
@@ -45,12 +44,13 @@ const PollCard = ({ poll }: PollCardProps) => {
         }
     };
 
+    // Determine if the action buttons should be disabled
+    const actionsDisabled = loading || !isConnected || !contract;
+
     const isPollOpen = poll.status === PollStatus.OPEN;
     const isResolved = poll.status === PollStatus.RESOLVED;
-    // Check if the current user is the creator of the poll
     const isCreator = address?.toLowerCase() === poll.creator.toLowerCase();
-    const canResolve = isPollOpen && Date.now() / 1000 > poll.resolveTime;
-
+    const canResolve = isPollOpen && new Date() > poll.resolveTime;
 
     const renderStatus = () => {
         if (isResolved) {
@@ -80,24 +80,28 @@ const PollCard = ({ poll }: PollCardProps) => {
                 </div>
 
                 <div className="text-sm text-gray-400 space-y-2 mb-6">
-                     <div className="flex items-center"><ClockIcon className="h-4 w-4 mr-2" /><span>Ends: {formatTime(poll.deadline)}</span></div>
-                     <div className="flex items-center"><CheckCircleIcon className="h-4 w-4 mr-2" /><span>Resolves: {formatTime(poll.resolveTime)}</span></div>
+                     <div className="flex items-center"><ClockIcon className="h-4 w-4 mr-2" /><span>Ends: {poll.deadline.toLocaleString()}</span></div>
+                     <div className="flex items-center"><CheckCircleIcon className="h-4 w-4 mr-2" /><span>Resolves: {poll.resolveTime.toLocaleString()}</span></div>
                 </div>
 
                 <div className="flex justify-between items-center mb-4 text-white">
                     <div className="text-center">
                         <p className="font-bold text-green-400 text-lg">YES</p>
-                        <p>{ethers.utils.formatEther(poll.yesStaked)} ETH</p>
+                        <p>{poll.yesStaked} ETH</p>
+                    </div>
+                     <div className="text-center">
+                        <p className="font-bold text-gray-400 text-lg">Total Staked</p>
+                        <p>{poll.totalStaked} ETH</p>
                     </div>
                     <div className="text-center">
                         <p className="font-bold text-red-400 text-lg">NO</p>
-                        <p>{ethers.utils.formatEther(poll.noStaked)} ETH</p>
+                        <p>{poll.noStaked} ETH</p>
                     </div>
                 </div>
             </div>
 
             <div className="mt-auto">
-                 {isPollOpen && Date.now()/1000 < poll.deadline && (
+                 {isPollOpen && new Date() < poll.deadline && (
                     <div className="mt-4">
                         <label htmlFor={`amount-${poll.id}`} className="block text-sm font-medium text-gray-300 mb-2">Stake Amount (ETH)</label>
                         <input 
@@ -108,10 +112,10 @@ const PollCard = ({ poll }: PollCardProps) => {
                             className="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-indigo-500 focus:border-indigo-500"
                         />
                         <div className="flex justify-between mt-2 space-x-2">
-                            <button onClick={() => handlePredict(PollSide.YES)} disabled={loading} className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg disabled:opacity-50">
+                            <button onClick={() => handlePredict(PollSide.YES)} disabled={actionsDisabled} className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg disabled:opacity-50">
                                 Predict YES
                             </button>
-                            <button onClick={() => handlePredict(PollSide.NO)} disabled={loading} className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg disabled:opacity-50">
+                            <button onClick={() => handlePredict(PollSide.NO)} disabled={actionsDisabled} className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg disabled:opacity-50">
                                 Predict NO
                             </button>
                         </div>
@@ -122,10 +126,10 @@ const PollCard = ({ poll }: PollCardProps) => {
                      <div className="mt-4 border-t border-gray-700 pt-4">
                         <h4 className="font-bold text-center text-white mb-2">Resolve Poll</h4>
                         <div className="flex justify-between space-x-2">
-                            <button onClick={() => handleResolve(PollSide.YES)} disabled={loading} className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg disabled:opacity-50">
+                            <button onClick={() => handleResolve(PollSide.YES)} disabled={actionsDisabled} className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg disabled:opacity-50">
                                 Resolve as YES
                             </button>
-                            <button onClick={() => handleResolve(PollSide.NO)} disabled={loading} className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg disabled:opacity-50">
+                            <button onClick={() => handleResolve(PollSide.NO)} disabled={actionsDisabled} className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg disabled:opacity-50">
                                 Resolve as NO
                             </button>
                         </div>
@@ -134,7 +138,7 @@ const PollCard = ({ poll }: PollCardProps) => {
                 
                 {isResolved && (
                     <div className="mt-4">
-                        <button onClick={handleClaim} disabled={loading} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg disabled:opacity-50 flex items-center justify-center">
+                        <button onClick={handleClaim} disabled={actionsDisabled} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg disabled:opacity-50 flex items-center justify-center">
                            <CurrencyDollarIcon className="h-5 w-5 mr-2"/> Claim Winnings
                         </button>
                     </div>

@@ -15,26 +15,29 @@ const CreatePoll = () => {
         e.preventDefault();
         setError('');
 
-        const deadlineTimestamp = Math.floor(new Date(deadline).getTime() / 1000);
-        const resolveTimestamp = Math.floor(new Date(resolveTime).getTime() / 1000);
+        // Create Date objects from the string values.
+        const deadlineDate = new Date(deadline);
+        const resolveDate = new Date(resolveTime);
 
-        if (isNaN(deadlineTimestamp) || isNaN(resolveTimestamp)) {
+        // Check if the dates are valid
+        if (isNaN(deadlineDate.getTime()) || isNaN(resolveDate.getTime())) {
             setError("Please enter valid dates for both deadline and resolution time.");
             return;
         }
 
-        if (deadlineTimestamp <= Math.floor(Date.now() / 1000)) {
+        if (deadlineDate <= new Date()) {
             setError("The prediction deadline must be in the future.");
             return;
         }
 
-        if (resolveTimestamp <= deadlineTimestamp) {
+        if (resolveDate <= deadlineDate) {
             setError("The resolution time must be after the prediction deadline.");
             return;
         }
 
         try {
-            await createPoll(question, deadlineTimestamp, resolveTimestamp);
+            // Pass the Date objects directly to the createPoll function.
+            await createPoll(question, deadlineDate, resolveDate);
             navigate('/polls'); // Redirect to polls page on success
         } catch (e: any) {
             setError(e.message || 'Failed to create poll.');

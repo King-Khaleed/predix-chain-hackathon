@@ -1,228 +1,431 @@
+
 [
-    {
-      "type": "function",
-      "name": "createPoll",
-      "inputs": [
-        { "name": "_question", "type": "string", "internalType": "string" },
-        { "name": "_deadline", "type": "uint256", "internalType": "uint256" },
-        { "name": "_resolveTime", "type": "uint256", "internalType": "uint256" }
-      ],
-      "outputs": [{ "name": "id", "type": "uint256", "internalType": "uint256" }],
-      "stateMutability": "nonpayable"
-    },
-    {
-      "type": "function",
-      "name": "predict",
-      "inputs": [
-        { "name": "_pollId", "type": "uint256", "internalType": "uint256" },
-        { "name": "_side", "type": "uint8", "internalType": "enum PredictionPoll.Side" }
-      ],
-      "outputs": [],
-      "stateMutability": "payable"
-    },
-    {
-      "type": "function",
-      "name": "resolvePoll",
-      "inputs": [
-        { "name": "_pollId", "type": "uint256", "internalType": "uint256" },
-        { "name": "_outcome", "type": "uint8", "internalType": "enum PredictionPoll.Side" }
-      ],
-      "outputs": [],
-      "stateMutability": "nonpayable"
-    },
-    {
-      "type": "function",
-      "name": "claim",
-      "inputs": [{ "name": "_pollId", "type": "uint256", "internalType": "uint256" }],
-      "outputs": [],
-      "stateMutability": "nonpayable"
-    },
-    {
-      "type": "function",
-      "name": "getPoll",
-      "inputs": [{ "name": "_id", "type": "uint256", "internalType": "uint256" }],
-      "outputs": [
-        { "name": "creator", "type": "address", "internalType": "address" },
-        { "name": "question", "type": "string", "internalType": "string" },
-        { "name": "deadline", "type": "uint256", "internalType": "uint256" },
-        { "name": "resolveTime", "type": "uint256", "internalType": "uint256" },
-        { "name": "outcome", "type": "uint8", "internalType": "enum PredictionPoll.Side" },
-        { "name": "status", "type": "uint8", "internalType": "enum PredictionPoll.Status" },
-        { "name": "totalStaked", "type": "uint256", "internalType": "uint256" },
-        { "name": "yesStaked", "type": "uint256", "internalType": "uint256" },
-        { "name": "noStaked", "type": "uint256", "internalType": "uint256" }
-      ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
-      "name": "getUserStake",
-      "inputs": [
-        { "name": "_pollId", "type": "uint256", "internalType": "uint256" },
-        { "name": "_user", "type": "address", "internalType": "address" }
-      ],
-      "outputs": [
-        { "name": "yesStake", "type": "uint256", "internalType": "uint256" },
-        { "name": "noStake", "type": "uint256", "internalType": "uint256" }
-      ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
-      "name": "nextPollId",
-      "inputs": [],
-      "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
-      "stateMutability": "view"
-    },
-      {
-      "type": "function",
-      "name": "polls",
-      "inputs": [
-        {
-          "name": "",
-          "type": "uint256",
-          "internalType": "uint256"
-        }
-      ],
-      "outputs": [
-        {
-          "name": "creator",
-          "type": "address",
-          "internalType": "address"
-        },
-        {
-          "name": "question",
-          "type": "string",
-          "internalType": "string"
-        },
-        {
-          "name": "deadline",
-          "type": "uint256",
-          "internalType": "uint256"
-        },
-        {
-          "name": "resolveTime",
-          "type": "uint256",
-          "internalType": "uint256"
-        },
-        {
-          "name": "outcome",
-          "type": "uint8",
-          "internalType": "enum PredictionPoll.Side"
-        },
-        {
-          "name": "status",
-          "type": "uint8",
-          "internalType": "enum PredictionPoll.Status"
-        },
-        {
-          "name": "totalStaked",
-          "type": "uint256",
-          "internalType": "uint256"
-        },
-        {
-          "name": "exists",
-          "type": "bool",
-          "internalType": "bool"
-        }
-      ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
-      "name": "stakes",
-      "inputs": [
-          {"name": "", "type": "address"},
-          {"name": "", "type": "uint256"},
-          {"name": "", "type": "uint8"}
-      ],
-      "outputs": [
-          {"name": "", "type": "uint256"}
-      ],
-      "stateMutability": "view"
-    },
-      {
-      "type": "function",
-      "name": "claimed",
-      "inputs": [
-          {"name": "", "type": "address"},
-          {"name": "", "type": "uint256"}
-      ],
-      "outputs": [
-          {"name": "", "type": "bool"}
-      ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "event",
-      "name": "PollCreated",
-      "inputs": [
-        { "name": "id", "type": "uint256", "indexed": true },
-        { "name": "creator", "type": "address", "indexed": true },
-        { "name": "question", "type": "string", "indexed": false },
-        { "name": "deadline", "type": "uint256", "indexed": false },
-        { "name": "resolveTime", "type": "uint256", "indexed": false }
-      ],
-      "anonymous": false
-    },
-    {
-      "type": "event",
-      "name": "Predicted",
-      "inputs": [
-        { "name": "pollId", "type": "uint256", "indexed": true },
-        { "name": "user", "type": "address", "indexed": true },
-        { "name": "side", "type": "uint8", "indexed": false },
-        { "name": "amount", "type": "uint256", "indexed": false }
-      ],
-      "anonymous": false
-    },
-    {
-      "type": "event",
-      "name": "Resolved",
-      "inputs": [
-        { "name": "pollId", "type": "uint256", "indexed": true },
-        { "name": "outcome", "type": "uint8", "indexed": false }
-      ],
-      "anonymous": false
-    },
-    {
-      "type": "event",
-      "name": "Claimed",
-      "inputs": [
-        { "name": "pollId", "type": "uint256", "indexed": true },
-        { "name": "user", "type": "address", "indexed": true },
-        { "name": "reward", "type": "uint256", "indexed": false }
-      ],
-      "anonymous": false
-    },
-    {
-      "type": "error",
-      "name": "TooLate",
-      "inputs": []
-    },
-    {
-      "type": "error",
-      "name": "NotOpen",
-      "inputs": []
-    },
-    {
-      "type": "error",
-      "name": "TransferFailed",
-      "inputs": []
-    },
-    {
-      "type": "error",
-      "name": "NothingToClaim",
-      "inputs": []
-    },
-    {
-      "type": "error",
-      "name": "WrongOutcome",
-      "inputs": []
-    },
-      {
-      "type": "error",
-      "name": "EarlyResolve",
-      "inputs": []
-    }
-  ]
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_pollId",
+				"type": "uint256"
+			}
+		],
+		"name": "claim",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_question",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_deadline",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_resolveTime",
+				"type": "uint256"
+			}
+		],
+		"name": "createPoll",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "EarlyResolve",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "NotOpen",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "NothingToClaim",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "TooLate",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "TransferFailed",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "WrongOutcome",
+		"type": "error"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "pollId",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "reward",
+				"type": "uint256"
+			}
+		],
+		"name": "Claimed",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "creator",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "question",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "deadline",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "resolveTime",
+				"type": "uint256"
+			}
+		],
+		"name": "PollCreated",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_pollId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "enum PredictionPoll.Side",
+				"name": "_side",
+				"type": "uint8"
+			}
+		],
+		"name": "predict",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "pollId",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "enum PredictionPoll.Side",
+				"name": "side",
+				"type": "uint8"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "Predicted",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "pollId",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "enum PredictionPoll.Side",
+				"name": "outcome",
+				"type": "uint8"
+			}
+		],
+		"name": "Resolved",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_pollId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "enum PredictionPoll.Side",
+				"name": "_outcome",
+				"type": "uint8"
+			}
+		],
+		"name": "resolvePoll",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "claimed",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_id",
+				"type": "uint256"
+			}
+		],
+		"name": "getPoll",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "creator",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "question",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "deadline",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "resolveTime",
+				"type": "uint256"
+			},
+			{
+				"internalType": "enum PredictionPoll.Side",
+				"name": "outcome",
+				"type": "uint8"
+			},
+			{
+				"internalType": "enum PredictionPoll.Status",
+				"name": "status",
+				"type": "uint8"
+			},
+			{
+				"internalType": "uint256",
+				"name": "totalStaked",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "yesStaked",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "noStaked",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_pollId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "_user",
+				"type": "address"
+			}
+		],
+		"name": "getUserStake",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "yesStake",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "noStake",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "nextPollId",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "polls",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "creator",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "question",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "deadline",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "resolveTime",
+				"type": "uint256"
+			},
+			{
+				"internalType": "enum PredictionPoll.Side",
+				"name": "outcome",
+				"type": "uint8"
+			},
+			{
+				"internalType": "enum PredictionPoll.Status",
+				"name": "status",
+				"type": "uint8"
+			},
+			{
+				"internalType": "uint256",
+				"name": "totalStaked",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "exists",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "enum PredictionPoll.Side",
+				"name": "",
+				"type": "uint8"
+			}
+		],
+		"name": "stakes",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+]

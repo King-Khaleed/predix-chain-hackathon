@@ -3,18 +3,17 @@ import { ethers } from 'ethers';
 import useWallet from './useWallet';
 import PredictionPollABI from '../utils/PredictionPollABI.json';
 
-// The new, correct, deployed contract address
-const contractAddress = '0x05Af3914Db5F05E95b478cEC4434aA8334e34c3a';
-
-if (!contractAddress) {
-    console.error("Contract address not found. Please set REACT_APP_CONTRACT_ADDRESS in your .env file.");
-}
+// The correct, deployed BlockDAGs contract address
+const contractAddress = '0x2819609394946F7B0588b23c2F2C5900c9B62A1a';
 
 const useContract = () => {
     const { signer } = useWallet();
 
+    // The contract instance is memoized to prevent re-creation on every render
     const contract = useMemo(() => {
-        if (!signer || !contractAddress) {
+        // The contract cannot be created without a signer. The signer is only available
+        // after the user has connected their wallet.
+        if (!signer) {
             return null;
         }
 

@@ -1,27 +1,26 @@
 import { BigNumber } from 'ethers';
 
-// Enums matching the smart contract
+// Enum for Poll Status, matching the contract's enum
 export enum PollStatus {
-    OPEN,
-    RESOLVED,
-    CANCELLED
+  Open,
+  Resolved
 }
 
+// Enum for Poll Side, matching the contract's enum
 export enum PollSide {
-    NO,
-    YES
+  No, // Represents 0
+  Yes  // Represents 1
 }
 
-// This interface matches the structure of the getPoll view function in the smart contract
 export interface Poll {
-    id: number;
-    creator: string; // Address of the poll creator
-    question: string;
-    deadline: number; // Storing as Unix timestamp
-    resolveTime: number; // Storing as Unix timestamp
-    outcome: PollSide;
-    status: PollStatus;
-    totalStaked: BigNumber;
-    yesStaked: BigNumber;
-    noStaked: BigNumber;
+  id: number;
+  creator: string;
+  question: string;
+  deadline: Date; // Corresponds to uint256
+  resolveTime: Date; // Corresponds to uint256
+  outcome: PollSide; // Corresponds to enum PredictionPoll.Side
+  status: PollStatus; // Corresponds to enum PredictionPoll.Status
+  totalStaked: string; // Corresponds to uint256, formatted as a string
+  yesStaked: string; // Corresponds to uint256, formatted as a string
+  noStaked: string; // Corresponds to uint256, formatted as a string
 }
