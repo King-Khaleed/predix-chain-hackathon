@@ -115,6 +115,28 @@ const usePolls = () => {
             setLoading(false);
         }
     }, [contract]);
+
+    const getPoll = useCallback(async (id: number): Promise<Poll | null> => {
+        if (!contract) return null;
+        try {
+            const pollData = await contract.getPoll(id);
+            return {
+                id: id,
+                creator: pollData.creator,
+                question: pollData.question,
+                deadline: new Date(Number(pollData.deadline) * 1000),
+                resolveTime: new Date(Number(pollData.resolveTime) * 1000),
+                status: pollData.status,
+                totalStaked: pollData.totalStaked.toString(),
+                yesStaked: pollData.yesStaked.toString(),
+                noStaked: pollData.noStaked.toString(),
+                outcome: pollData.outcome,
+            } as Poll;
+        } catch (error) {
+            console.error(`Failed to fetch poll with id: ${id}`, error);
+            return null;
+        }
+    }, [contract]);
     
     const getUserStake = useCallback(async (pollId: number, userAddress: string) => {
         if (!contract) return { yesStake: "0", noStake: "0" }; // Return default if contract not ready
@@ -130,7 +152,7 @@ const usePolls = () => {
     }, [contract]);
 
 
-    return { getPolls, createPoll, predict, resolvePoll, claim, getUserStake, loading };
+    return { getPoll, getPolls, createPoll, predict, resolvePoll, claim, getUserStake, loading };
 };
 
 export default usePolls;

@@ -7,6 +7,7 @@ import Polls from './pages/Polls';
 import Dashboard from './pages/Dashboard';
 import CreatePoll from './pages/CreatePoll'; // Import the CreatePoll page
 import NavBar from './components/NavBar'; // Import the NavBar
+import PollDetailPage from './pages/PollDetailPage';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route path="/polls" element={<Polls />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/create-poll" element={<CreatePoll />} />
+          <Route path="/poll/:id" element={<PollDetailPage />} />
         </Routes>
       </main>
     </WalletProvider>
