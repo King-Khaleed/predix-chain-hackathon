@@ -1,85 +1,51 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { ethers } from 'ethers';
-import { toast } from 'react-hot-toast';
-import Header from '../components/Header';
-import { getAllPolls, getReadOnlyProvider } from '../utils/web3';
-import useWallet from '../hooks/useWallet';
-import PollCard, { Poll } from '../components/PollCard';
+import { useState, useEffect } from 'react';
+import usePolls from '../hooks/usePolls';
+import { Poll } from '../types/poll';
+import PollCard from '../components/PollCard';
+import { GlobeAltIcon } from '@heroicons/react/24/outline';
 
 const Polls = () => {
-  const { provider } = useWallet();
-  const [polls, setPolls] = useState<Poll[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('All');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const pollsPerPage = 9;
+    const [polls, setPolls] = useState<Poll[]>([]);
+    const { getPolls, loading } = usePolls();
 
-  const fetchPolls = useCallback(async () => {
-    // No need to show loader on manual refresh
-    const readProvider = provider || getReadOnlyProvider();
-    try {
-      const pollsData = await getAllPolls(readProvider);
-      setPolls(pollsData.sort((a, b) => b.id - a.id)); // Sort by newest first
-    } catch (error) {
-      console.error("Failed to fetch polls:", error);
-      toast.error('Failed to load polls. Please check your connection.');
-    }
-  }, [provider]);
+    useEffect(() => {
+        const fetchPolls = async () => {
+            const fetchedPolls = await getPolls();
+            setPolls(fetchedPolls);
+        };
 
-  useEffect(() => {
-    setLoading(true);
-    fetchPolls().finally(() => setLoading(false));
-  }, [fetchPolls]);
+        fetchPolls();
+    }, [getPolls]);
 
-  const handlePollUpdate = () => {
-    // Add a small delay to allow blockchain to update
-    setTimeout(() => fetchPolls(), 1000);
-  };
+    return (
+        <div className="container mx-auto px-4 py-8">
+            <div className="text-center mb-12">
+                <GlobeAltIcon className="mx-auto h-12 w-12 text-indigo-400" />
+                <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl" style={{ fontFamily: `'Orbitron', sans-serif` }}>
+                    All Prediction Polls
+                </h1>
+                <p className="mt-6 text-lg leading-8 text-gray-300">
+                    Browse active and resolved prediction markets from across the community.
+                </p>
+            </div>
 
-  const filteredPolls = useMemo(() => {
-    setCurrentPage(1); // Reset to first page on filter change
-    return polls
-      .filter(poll => {
-        if (filter === 'Open') return poll.status === 0;
-        if (filter === 'Resolved') return poll.status !== 0;
-        return true;
-      })
-      .filter(poll => poll.question.toLowerCase().includes(searchTerm.toLowerCase()));
-  }, [polls, filter, searchTerm]);
-
-  const paginatedPolls = useMemo(() => {
-    const startIndex = (currentPage - 1) * pollsPerPage;
-    return filteredPolls.slice(startIndex, startIndex + pollsPerPage);
-  }, [filteredPolls, currentPage, pollsPerPage]);
-
-  const totalPages = Math.ceil(filteredPolls.length / pollsPerPage);
-
-  return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      <Header />
-      <main className="container mx-auto px-4 py-8">
-        <div className="bg-gray-800 rounded-lg shadow-xl p-6 mb-8">
-            {/* Filter and search UI */}
+            {loading ? (
+                <div className="text-center text-white">
+                    <p>Loading polls from the blockchain...</p>
+                </div>
+            ) : polls.length === 0 ? (
+                <div className="text-center text-gray-400">
+                    <p>No polls have been created yet. Be the first!</p>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {polls.map((poll) => (
+                        <PollCard key={poll.id} poll={poll} />
+                    ))}
+                </div>
+            )}
         </div>
-
-        {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-24 w-24 border-t-4 border-b-4 border-indigo-500"></div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {paginatedPolls.map(poll => (
-                <PollCard key={poll.id} poll={poll} onPollUpdate={handlePollUpdate} />
-            ))}
-          </div>
-        )}
-
-        {/* Pagination UI */}
-        
-      </main>
-    </div>
-  );
+    );
 };
 
 export default Polls;

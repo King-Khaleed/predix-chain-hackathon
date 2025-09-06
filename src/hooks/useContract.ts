@@ -3,7 +3,8 @@ import { ethers } from 'ethers';
 import useWallet from './useWallet';
 import PredictionPollABI from '../utils/PredictionPollABI.json';
 
-const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS;
+// The new, correct, deployed contract address
+const contractAddress = '0x05Af3914Db5F05E95b478cEC4434aA8334e34c3a';
 
 if (!contractAddress) {
     console.error("Contract address not found. Please set REACT_APP_CONTRACT_ADDRESS in your .env file.");
