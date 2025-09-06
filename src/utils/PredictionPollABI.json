@@ -1,0 +1,63 @@
+[
+  {
+    "name": "createPoll",
+    "type": "function",
+    "inputs": [
+      { "type": "string", "name": "question" },
+      { "type": "uint256", "name": "deadline" },
+      { "type": "uint256", "name": "resolveTime" }
+    ],
+    "outputs": []
+  },
+  {
+    "name": "predict",
+    "type": "function",
+    "inputs": [
+      { "type": "uint256", "name": "pollId" },
+      { "type": "uint8", "name": "side" },
+      { "type": "uint256", "name": "amount" }
+    ],
+    "outputs": []
+  },
+  {
+    "name": "resolvePoll",
+    "type": "function",
+    "inputs": [
+      { "type": "uint256", "name": "pollId" },
+      { "type": "uint8", "name": "outcome" }
+    ],
+    "outputs": []
+  },
+  {
+    "name": "claim",
+    "type": "function",
+    "inputs": [{ "type": "uint256", "name": "pollId" }],
+    "outputs": []
+  },
+  {
+    "name": "getPoll",
+    "type": "function",
+    "inputs": [{ "type": "uint256", "name": "pollId" }],
+    "outputs": [
+      {
+        "components": [
+          { "type": "string", "name": "question" },
+          { "type": "uint256", "name": "deadline" },
+          { "type": "uint256", "name": "resolveTime" },
+          { "type": "uint256", "name": "totalStaked" },
+          { "type": "uint256", "name": "yesStaked" },
+          { "type": "uint256", "name": "noStaked" },
+          { "type": "uint8", "name": "status" },
+          { "type": "address", "name": "creator" }
+        ],
+        "type": "tuple"
+      }
+    ]
+  },
+  {
+    "name": "nextPollId",
+    "type": "function",
+    "inputs": [],
+    "outputs": [{ "type": "uint256" }]
+  }
+]
