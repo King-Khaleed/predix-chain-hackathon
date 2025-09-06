@@ -20,14 +20,13 @@ export const getContract = (providerOrSigner) => {
 };
 
 // Takes a signer to execute a transaction
-export const createPoll = async (signer, question, deadline) => {
+export const createPoll = async (signer, question, deadline, resolveTime) => {
     try {
         const contract = getContract(signer);
-        const tx = await contract.createPoll(question, deadline);
+        const tx = await contract.createPoll(question, deadline, resolveTime);
         return await tx.wait();
     } catch (error) {
         console.error('Error creating poll:', error);
-        // More specific error handling can be added here based on contract reverts
         throw new Error('Failed to create poll. Please check console for details.');
     }
 };
@@ -46,10 +45,10 @@ export const predict = async (signer, pollId, side, amountEth) => {
 };
 
 // Takes a signer to execute a transaction
-export const resolvePoll = async (signer, pollId) => {
+export const resolvePoll = async (signer, pollId, outcome) => {
     try {
         const contract = getContract(signer);
-        const tx = await contract.resolvePoll(pollId);
+        const tx = await contract.resolvePoll(pollId, outcome);
         return await tx.wait();
     } catch (error) {
         console.error('Error resolving poll:', error);
@@ -77,17 +76,16 @@ export const getPoll = async (provider, pollId) => {
         return {
             id: pollId,
             question: poll.question,
+            creator: poll.creator,
             deadline: Number(poll.deadline),
             resolveTime: Number(poll.resolveTime),
-            totalStaked: ethers.formatEther(poll.totalStaked),
-            yesStaked: ethers.formatEther(poll.yesStaked),
-            noStaked: ethers.formatEther(poll.noStaked),
+            totalStaked: poll.totalStaked,
+            yesStaked: poll.yesStaked,
+            noStaked: poll.noStaked,
             status: poll.status,
-            creator: poll.creator,
         };
     } catch (error) {
         console.error(`Error fetching poll ${pollId}:`, error);
-        // Return null to allow Promise.all to continue on single failures
         return null;
     }
 };
@@ -102,10 +100,39 @@ export const getAllPolls = async (provider) => {
             pollPromises.push(getPoll(provider, i));
         }
         const polls = await Promise.all(pollPromises);
-        // Filter out any polls that failed to fetch
         return polls.filter(p => p !== null);
     } catch (error) {
         console.error('Error fetching all polls:', error);
         throw new Error('Failed to fetch all polls.');
+    }
+};
+
+// New function to check a user's prediction for a specific poll
+export const getUserPrediction = async (provider, pollId, userAddress) => {
+    if (!userAddress) return null;
+    try {
+        const contract = getContract(provider);
+        const prediction = await contract.predictions(pollId, userAddress);
+        // If amount is 0, they haven't voted.
+        if (prediction.amount === 0n) return null;
+        return {
+            side: prediction.side, // true for Yes, false for No
+            amount: prediction.amount
+        };
+    } catch (error) {
+        console.error(`Error fetching user prediction for poll ${pollId}:`, error);
+        return null;
+    }
+};
+
+// New function to check if a user has already claimed their winnings
+export const getHasClaimed = async (provider, pollId, userAddress) => {
+    if (!userAddress) return false;
+    try {
+        const contract = getContract(provider);
+        return await contract.hasClaimed(pollId, userAddress);
+    } catch (error) {
+        console.error(`Error checking claim status for poll ${pollId}:`, error);
+        return false; // Assume not claimed if error occurs
     }
 };
