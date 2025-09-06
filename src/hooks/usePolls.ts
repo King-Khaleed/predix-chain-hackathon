@@ -6,10 +6,9 @@ import useContract from './useContract';
 import * as web3 from '../utils/web3';
 
 const usePolls = () => {
-    const contract = useContract(); // The single source of truth for the contract
+    const contract = useContract();
     const [loading, setLoading] = useState(false);
 
-    // The generic handler now passes the contract to the web3 function
     const handleInteraction = useCallback(async (
         interaction: (contract: Contract, ...args: any[]) => Promise<any>,
         args: any[],
@@ -21,12 +20,14 @@ const usePolls = () => {
         }
 
         setLoading(true);
+        const toastId = toast.loading(messages.loading);
         try {
-            const promise = interaction(contract, ...args);
-            await toast.promise(promise, messages);
+            await interaction(contract, ...args);
+            toast.success(messages.success, { id: toastId });
         } catch (error: any) {
             console.error(messages.error, error);
-            toast.error(error.message || "An unknown error occurred.");
+            const errorMessage = error.reason || error.message || "An unknown error occurred.";
+            toast.error(errorMessage, { id: toastId });
         } finally {
             setLoading(false);
         }
@@ -80,20 +81,40 @@ const usePolls = () => {
         );
     };
 
-    // Read-only functions do not need to go through handleInteraction
     const getPolls = useCallback(async (): Promise<Poll[]> => {
+        if (!contract) return [];
         setLoading(true);
         try {
-            // getPolls does not require a signer, so it can be called directly.
-            return await web3.getPolls();
+            const totalPolls = await contract.nextPollId();
+            const polls: Poll[] = [];
+            for (let i = 0; i < totalPolls; i++) {
+                try {
+                    const pollData = await contract.getPoll(i);
+                    polls.push({ 
+                        id: i,
+                        creator: pollData.creator,
+                        question: pollData.question,
+                        deadline: new Date(Number(pollData.deadline) * 1000),
+                        resolveTime: new Date(Number(pollData.resolveTime) * 1000),
+                        status: pollData.status,
+                        totalStaked: pollData.totalStaked.toString(),
+                        yesStaked: pollData.yesStaked.toString(),
+                        noStaked: pollData.noStaked.toString(),
+                        outcome: pollData.outcome,
+                    } as Poll);
+                } catch (error) {
+                    console.error(`Failed to fetch poll with id: ${i}`, error);
+                }
+            }
+            return polls;
         } catch (error: any) {
             console.error("Failed to get polls:", error);
-            toast.error(error.message);
+            toast.error(error.message || "Could not fetch polls from the blockchain.");
             return [];
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [contract]);
     
     const getUserStake = useCallback(async (pollId: number, userAddress: string) => {
         if (!contract) return { yesStake: "0", noStake: "0" }; // Return default if contract not ready
