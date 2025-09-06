@@ -1,8 +1,8 @@
 import { ethers } from 'ethers';
 import PredictionPollABI from './PredictionPollABI.json';
 
-const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS;
-const rpcUrl = process.env.REACT_APP_RPC_URL;
+const contractAddress = import.meta.env.VITE_APP_CONTRACT_ADDRESS;
+const rpcUrl = import.meta.env.VITE_APP_RPC_URL;
 
 export const initProvider = async () => {
   if (window.ethereum) {
@@ -14,8 +14,10 @@ export const initProvider = async () => {
       console.error('Error connecting to MetaMask', error);
       throw new Error('User denied account access.');
     }
+  } else if (rpcUrl) {
+    return new ethers.JsonRpcProvider(rpcUrl);
   } else {
-    throw new Error('MetaMask not detected. Please install MetaMask.');
+    throw new Error('MetaMask not detected and no RPC URL configured. Please install MetaMask or set VITE_APP_RPC_URL.');
   }
 };
 
@@ -105,7 +107,7 @@ export const getAllPolls = async (provider) => {
   }
 };
 
-export const getUserPredictions = async (provider, userAddress) => {
+export const getUserPredictions = async (provider) => {
   // This is a placeholder implementation. A more robust implementation would
   // involve indexing Predicted events on a backend or using a subgraph.
   try {
