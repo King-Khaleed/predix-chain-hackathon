@@ -1,9 +1,11 @@
 import { BigNumber } from 'ethers';
 
-// Enum for Poll Status, matching the contract's enum
+// Enum for Poll Status. NOTE: Pending and ReadyToResolve are client-side derived statuses.
 export enum PollStatus {
-  Open,
-  Resolved
+  Open,      // From contract (0)
+  Resolved,  // From contract (1)
+  Pending,    // Derived on client-side
+  ReadyToResolve // Derived on client-side
 }
 
 // Enum for Poll Side, matching the contract's enum

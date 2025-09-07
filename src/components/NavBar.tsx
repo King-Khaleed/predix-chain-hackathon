@@ -20,7 +20,7 @@ const NavBar = () => {
                 <div className="flex items-center justify-between h-20">
                     {/* Logo */}
                     <Link to="/" className="text-2xl font-bold text-white" style={{ fontFamily: `'Orbitron', sans-serif` }}>
-                        P<span className="text-indigo-400">o</span>llChain
+                        Predi<span className="text-indigo-400">X-</span>Chain
                     </Link>
 
                     {/* Navigation Links */}

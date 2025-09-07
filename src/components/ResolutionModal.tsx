@@ -32,8 +32,8 @@ const ResolutionModal: React.FC<ResolutionModalProps> = ({ pollId, isOpen, onClo
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
             <div className="bg-gray-800 p-6 rounded-lg w-full max-w-md">
-                <h2 className="text-2xl font-bold mb-4">Resolve Poll</h2>
-                <p className="mb-4">Select the winning outcome for this poll.</p>
+                <h2 className="text-2xl font-bold mb-4">Resolve Prediction</h2>
+                <p className="mb-4">Select the winning outcome for this prediction.</p>
                 <div className="flex justify-around mb-6">
                     <button 
                         onClick={() => setOutcome(true)} 

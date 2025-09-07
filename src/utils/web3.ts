@@ -21,7 +21,8 @@ export const predict = async (contract: Contract, pollId: number, side: number, 
 };
 
 export const resolvePoll = async (contract: Contract, pollId: number, outcome: number) => {
-    const tx = await contract.resolve(pollId, outcome);
+    console.log("Attempting to execute resolvePoll..."); // Diagnostic log
+    const tx = await contract.resolvePoll(pollId, outcome);
     await tx.wait();
 };
 

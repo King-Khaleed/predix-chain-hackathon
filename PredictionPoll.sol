@@ -110,9 +110,8 @@ contract PredictionPoll {
     function resolvePoll(uint256 _pollId, Side _outcome) external {
         Poll storage p = polls[_pollId];
         if (!p.exists) revert("No poll");
-        if (p.status != Status.OPEN) revert NotOpen();
         if (block.timestamp < p.resolveTime) revert EarlyResolve();
-        // For simplicity, anyone can resolve. In a real app, you'd add `require(msg.sender == p.creator);`
+        require(msg.sender == p.creator, "Only creator can resolve");
         
         p.outcome = _outcome;
         p.status = Status.RESOLVED;

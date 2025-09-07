@@ -40,17 +40,17 @@ const Polls = () => {
 
             {loading && polls.length === 0 ? (
                 <div className="text-center">
-                    <p className="text-white text-lg">Loading polls from the blockchain...</p>
+                    <p className="text-white text-lg">Loading predictions from the blockchain...</p>
                 </div>
             ) : polls.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {polls.map((poll) => (
-                        <PollCard key={poll.id} poll={poll} />
+                        <PollCard key={poll.id} poll={poll} linkTo={`/poll/${poll.id}`} />
                     ))}
                 </div>
             ) : (
                 <div className="text-center">
-                    <p className="text-white text-lg">No polls found.</p>
+                    <p className="text-white text-lg">No prediction found.</p>
                     <p className="text-gray-400">Be the first to create one!</p>
                 </div>
             )}

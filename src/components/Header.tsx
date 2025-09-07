@@ -30,7 +30,7 @@ const Header = () => {
                 Home
             </NavLink>
             <NavLink to="/polls" className={getNavLinkClassName} onClick={() => setIsMenuOpen(false)}>
-                All Polls
+                All Predictions
             </NavLink>
             <NavLink to="/dashboard" className={getNavLinkClassName} onClick={handleDashboardClick}>
                 My Dashboard

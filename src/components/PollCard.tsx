@@ -1,63 +1,52 @@
-import { Poll, PollStatus, PollSide } from '../types/poll';
+import React, { useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { ClockIcon, CheckCircleIcon, CubeTransparentIcon } from '@heroicons/react/24/outline';
+import { Poll, PollStatus } from '../types/poll';
+import { ethers } from 'ethers';
 
 interface PollCardProps {
     poll: Poll;
+    linkTo?: string;
 }
 
-const PollCard = ({ poll }: PollCardProps) => {
-    const isResolved = poll.status === PollStatus.RESOLVED;
+const PollCard: React.FC<PollCardProps> = ({ poll, linkTo }) => {
 
-    const renderStatus = () => {
-        if (isResolved) {
-            return (
-                <div className="flex items-center space-x-2 text-lg font-bold">
-                    <CheckCircleIcon className="h-6 w-6 text-green-400" />
-                    <span className="text-green-400">Resolved:</span>
-                    <span className={poll.outcome === PollSide.YES ? 'text-green-400' : 'text-red-400'}>
-                        {poll.outcome === PollSide.YES ? 'YES' : 'NO'}
-                    </span>
-                </div>
-            );
+    const getStatusInfo = (status: PollStatus) => {
+        switch (status) {
+            case PollStatus.Open:
+                return <span className="font-semibold text-green-400">Open</span>;
+            case PollStatus.Pending:
+                return <span className="font-semibold text-yellow-400">Pending</span>;
+            case PollStatus.Resolved:
+                return <span className="font-semibold text-red-400">Resolved</span>;
+            default:
+                return <span className="font-semibold text-gray-400">Unknown</span>;
         }
-        return (
-            <div className="flex items-center space-x-2 text-lg font-bold text-yellow-400">
-                 <CubeTransparentIcon className="h-6 w-6" /><span>Open</span>
+    };
+
+    const totalStaked = poll.yesStaked && poll.noStaked ? 
+    ethers.formatEther(BigInt(poll.yesStaked.toString()) + BigInt(poll.noStaked.toString())) : '0';
+
+    const cardContent = (
+        <div className="block p-6 bg-gray-800 rounded-lg shadow-lg hover:bg-gray-700 transition-colors duration-200 h-full">
+            <div className="flex justify-between items-start">
+                <h3 className="text-xl font-bold mb-2 text-white break-words w-10/12">{poll.question}</h3>
+                {getStatusInfo(poll.status)}
             </div>
-        )
-    }
-
-    return (
-        <Link to={`/poll/${poll.id}`} className="block bg-gray-800 border border-gray-700 rounded-2xl shadow-lg p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-indigo-500/30 hover:border-indigo-500">
-            <div>
-                <div className="flex justify-between items-start mb-4">
-                    <h3 className="text-xl font-bold text-white pr-4" style={{ fontFamily: `'Orbitron', sans-serif` }}>{poll.question}</h3>
-                    <div className="flex-shrink-0">{renderStatus()}</div>
-                </div>
-
-                <div className="text-sm text-gray-400 space-y-2 mb-6">
-                     <div className="flex items-center"><ClockIcon className="h-4 w-4 mr-2" /><span>Ends: {poll.deadline.toLocaleString()}</span></div>
-                     <div className="flex items-center"><CheckCircleIcon className="h-4 w-4 mr-2" /><span>Resolves: {poll.resolveTime.toLocaleString()}</span></div>
-                </div>
-
-                <div className="flex justify-between items-center mb-4 text-white">
-                    <div className="text-center">
-                        <p className="font-bold text-green-400 text-lg">YES</p>
-                        <p>{poll.yesStaked} ETH</p>
-                    </div>
-                     <div className="text-center">
-                        <p className="font-bold text-gray-400 text-lg">Total Staked</p>
-                        <p>{poll.totalStaked} ETH</p>
-                    </div>
-                    <div className="text-center">
-                        <p className="font-bold text-red-400 text-lg">NO</p>
-                        <p>{poll.noStaked} ETH</p>
-                    </div>
-                </div>
+            <div className="text-sm text-gray-400 mb-4">
+                <p>Ends: {poll.deadline.toLocaleString()}</p>
+                <p>Resolves: {poll.resolveTime.toLocaleString()}</p>
             </div>
-        </Link>
+            <div className="w-full bg-gray-700 rounded-full h-4 dark:bg-gray-700 my-2 flex">
+                <div className="bg-green-500 h-4 rounded-l-full" style={{ width: `${poll.totalStaked > 0 ? (Number(poll.yesStaked) / Number(poll.totalStaked)) * 100 : 50}%` }}></div>
+                <div className="bg-red-500 h-4 rounded-r-full" style={{ width: `${poll.totalStaked > 0 ? (Number(poll.noStaked) / Number(poll.totalStaked)) * 100 : 50}%` }}></div>
+            </div>
+            <div className="text-center mt-2 font-semibold">
+                Total Staked: {totalStaked} ETH
+            </div>
+        </div>
     );
+
+    return linkTo ? <Link to={linkTo}>{cardContent}</Link> : cardContent;
 };
 
 export default PollCard;
