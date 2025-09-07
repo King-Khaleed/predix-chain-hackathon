@@ -313,10 +313,12 @@ npx hardhat run scripts/deploy.js --network blockdag-testnet
 This entire project, including smart contracts and frontend application, was conceived, designed, and developed during the official BlockDAG hackathon period. No pre-existing code was used.
 
 ### **⏰ Development Timeline**
-- **Day 1**: Project ideation, smart contract development, initial React setup
-- **Day 2**: Core functionality implementation, Web3 integration
-- **Day 3**: UI/UX refinement, testing, bug fixes
-- **Day 4**: Final polishing, deployment, documentation
+Here's the minimized 2-day timeline:
+
+**⏰ Development Timeline**
+* **Day 1**: Project ideation, smart contract development, core functionality implementation, Web3 integration
+* **Day 2**: UI/UX refinement, testing, bug fixes, final polishing, deployment, documentation
+
 
 ### **👥 Team Contributions**
 - **Lead Developer**: Full-stack development, smart contract architecture, Web3 integration
