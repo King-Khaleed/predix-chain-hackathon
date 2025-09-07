@@ -3,13 +3,6 @@
 > **The Future of Truth is Decentralized**  
 > A high-speed, user-owned prediction market platform built on BlockDAG
 
-![BlockDAG](https://img.shields.io/badge/Built%20on-BlockDAG-blue)
-![Solidity](https://img.shields.io/badge/Solidity-%5E0.8.0-green)
-![React](https://img.shields.io/badge/React-18+-blue)
-![License](https://img.shields.io/badge/License-MIT-yellow)
-
----
-
 ## 📋 Table of Contents
 
 - [Project Overview](#project-overview)
@@ -33,7 +26,7 @@
 
 **PrediX-Chain** is a fully decentralized prediction market dApp that revolutionizes how communities forecast future events. Built from the ground up on the **BlockDAG network**, it leverages high-throughput, low-cost infrastructure to deliver a seamless and engaging user experience for creating, participating in, and resolving predictions on any topic.
 
-### 🎪 **Live Demo**: [https://predix-chain.vercel.app](https://predix-chain.vercel.app)
+### 🎪 **Live Demo**: [https://predix-chain.netlify.app/](https://predix-chain.netlify.app/)
 ### 📊 **Smart Contract**: [View on BlockDAG Explorer](https://explorer.blockdag.network/address/0xYourContractAddress)
 
 ---
@@ -140,7 +133,7 @@ predix-chain/
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-username/predix-chain.git
+   git clone https://github.com/King-Khaleed/predix-chain-hackathon
    cd predix-chain
    ```
 
@@ -226,7 +219,6 @@ Add BlockDAG Testnet to MetaMask:
 #### **createPoll(string memory question, string memory description, uint256 resolutionTime)**
 Creates a new prediction market
 - `question`: The prediction question
-- `description`: Additional context
 - `resolutionTime`: Unix timestamp when resolution becomes available
 
 #### **makePrediction(uint256 pollId, uint8 prediction)**
@@ -312,8 +304,6 @@ npx hardhat run scripts/deploy.js --network blockdag-testnet
 ### **✅ Original Work Declaration**
 This entire project, including smart contracts and frontend application, was conceived, designed, and developed during the official BlockDAG hackathon period. No pre-existing code was used.
 
-### **⏰ Development Timeline**
-Here's the minimized 2-day timeline:
 
 **⏰ Development Timeline**
 * **Day 1**: Project ideation, smart contract development, core functionality implementation, Web3 integration
@@ -343,7 +333,7 @@ Here's the minimized 2-day timeline:
 ## 🚀 Deployment
 
 ### **Live Application**
-- **Frontend**: [https://predix-chain.vercel.app](https://predix-chain.vercel.app)
+- **Frontend**: [https://predix-chain.netlify.app/](https://predix-chain.netlify.app/)
 - **Hosting**: Vercel with automatic deployments from main branch
 - **CDN**: Global edge network for optimal performance
 
@@ -407,7 +397,7 @@ We welcome contributions from the community! Please read our [Contributing Guide
 5. Open a Pull Request
 
 ### **Reporting Issues**
-Please use the [GitHub Issues](https://github.com/your-username/predix-chain/issues) page to report bugs or request features.
+Please use the [GitHub Issues](https://github.com/King-Khaleed/predix-chain/issues) page to report bugs or request features.
 
 ---
 
@@ -458,4 +448,4 @@ Thanks to the vibrant BlockDAG community for inspiration, support, and valuable 
 
 **🚀 Built with ❤️ for the BlockDAG Hackathon 2025**
 
-[Demo](https://predix-chain.vercel.app) • [Contract](https://explorer.blockdag.network/address/0x2819609394946F7B0588b23c2F2C5900c9B62A1a) • [Documentation](https://github.com/King-Khaleed/predix-chain-hackathon?tab=readme-ov-file)
+[Demo](https://predix-chain.netlify.app/) • [Contract](https://explorer.blockdag.network/address/0x2819609394946F7B0588b23c2F2C5900c9B62A1a) • [Documentation](https://github.com/King-Khaleed/predix-chain-hackathon?tab=readme-ov-file)
