@@ -1,7 +1,4 @@
 import { ethers, BrowserProvider, Eip1193Provider, Contract } from 'ethers';
-import { PollSide } from '../types/poll';
-
-// --- Helper Functions (Private) ---
 
 async function getProvider() {
     if (!window.ethereum) {
@@ -10,8 +7,6 @@ async function getProvider() {
     return new BrowserProvider(window.ethereum as Eip1193Provider);
 }
 
-// --- Web3 Functions (Exported) ---
-
 export const createPoll = async (contract: Contract, question: string, deadline: Date, resolveTime: Date) => {
     const deadlineTimestamp = Math.floor(deadline.getTime() / 1000);
     const resolveTimestamp = Math.floor(resolveTime.getTime() / 1000);
@@ -19,13 +14,13 @@ export const createPoll = async (contract: Contract, question: string, deadline:
     await tx.wait();
 };
 
-export const predict = async (contract: Contract, pollId: number, side: PollSide, amount: string) => {
+export const predict = async (contract: Contract, pollId: number, side: number, amount: string) => {
     const value = ethers.parseEther(amount);
     const tx = await contract.predict(pollId, side, { value });
     await tx.wait();
 };
 
-export const resolvePoll = async (contract: Contract, pollId: number, outcome: PollSide) => {
+export const resolvePoll = async (contract: Contract, pollId: number, outcome: number) => {
     const tx = await contract.resolve(pollId, outcome);
     await tx.wait();
 };

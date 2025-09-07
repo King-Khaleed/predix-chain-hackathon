@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import { Poll, PollSide } from '../types/poll';
+import { Poll } from '../types/poll';
 import usePolls from '../hooks/usePolls';
 import useWallet from '../hooks/useWallet';
 import { ethers } from 'ethers';
@@ -12,7 +12,7 @@ const PollDetailPage = () => {
     const { address } = useWallet();
     const [poll, setPoll] = useState<Poll | null>(null);
     const [loading, setLoading] = useState(true);
-    const [stakeAmount, setStakeAmount] = useState('');
+    const [stakeAmount, setStakeAmount] = useState('0.01');
 
     useEffect(() => {
         const fetchPoll = async () => {
@@ -37,9 +37,9 @@ const PollDetailPage = () => {
         fetchPoll();
     }, [id, getPoll]);
 
-    const handleVote = async (side: PollSide) => {
-        if (!id || !stakeAmount) {
-            toast.error("Please enter an amount to stake.");
+    const handleVote = async (side: number) => {
+        if (!id || !stakeAmount || parseFloat(stakeAmount) <= 0) {
+            toast.error("Please enter a valid amount to stake.");
             return;
         }
         const pollId = parseInt(id, 10);
@@ -72,9 +72,9 @@ const PollDetailPage = () => {
                 <p><strong>Resolution Time:</strong> {poll.resolveTime.toLocaleString()}</p>
             </div>
 
-            <div className="w-full bg-gray-700 rounded-full h-8 dark:bg-gray-700 my-4">
-                <div className="bg-green-500 h-8 rounded-l-full text-center text-black font-bold" style={{ width: `${poll.totalStaked > 0 ? (Number(poll.yesStaked) / Number(poll.totalStaked)) * 100 : 50}%` }}>YES</div>
-                <div className="bg-red-500 h-8 rounded-r-full text-center text-black font-bold" style={{ width: `${poll.totalStaked > 0 ? (Number(poll.noStaked) / Number(poll.totalStaked)) * 100 : 50}%` }}>NO</div>
+            <div className="w-full bg-gray-700 rounded-full h-8 dark:bg-gray-700 my-4 flex">
+                <div className="bg-green-500 h-8 rounded-l-full flex items-center justify-center text-black font-bold" style={{ width: `${poll.totalStaked > 0 ? (Number(poll.yesStaked) / Number(poll.totalStaked)) * 100 : 50}%` }}>YES</div>
+                <div className="bg-red-500 h-8 rounded-r-full flex items-center justify-center text-black font-bold" style={{ width: `${poll.totalStaked > 0 ? (Number(poll.noStaked) / Number(poll.totalStaked)) * 100 : 50}%` }}>NO</div>
             </div>
 
             {isDeadlinePassed ? (
@@ -87,7 +87,7 @@ const PollDetailPage = () => {
                     <div className="flex flex-col items-center gap-4">
                         <input
                             type="number"
-                            min="0"
+                            min="0.01"
                             step="0.01"
                             value={stakeAmount}
                             onChange={(e) => setStakeAmount(e.target.value)}
@@ -96,10 +96,10 @@ const PollDetailPage = () => {
                             disabled={pollsLoading}
                         />
                         <div className="flex gap-4">
-                            <button onClick={() => handleVote(PollSide.YES)} className="btn btn-success btn-lg shadow-lg hover:shadow-green-500/50" disabled={pollsLoading}>
+                            <button onClick={() => handleVote(1)} className="btn btn-success btn-lg shadow-lg hover:shadow-green-500/50" disabled={pollsLoading || !stakeAmount}>
                                 {pollsLoading ? <span className="loading loading-spinner"></span> : 'Vote YES'}
                             </button>
-                            <button onClick={() => handleVote(PollSide.NO)} className="btn btn-error btn-lg shadow-lg hover:shadow-red-500/50" disabled={pollsLoading}>
+                            <button onClick={() => handleVote(0)} className="btn btn-error btn-lg shadow-lg hover:shadow-red-500/50" disabled={pollsLoading || !stakeAmount}>
                                 {pollsLoading ? <span className="loading loading-spinner"></span> : 'Vote NO'}
                             </button>
                         </div>

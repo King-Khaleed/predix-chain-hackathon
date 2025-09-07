@@ -45,7 +45,7 @@ const usePolls = () => {
         );
     };
 
-    const predict = async (pollId: number, side: PollSide, amount: string) => {
+    const predict = async (pollId: number, side: number, amount: string) => {
         await handleInteraction(
             web3.predict,
             [pollId, side, amount],
@@ -57,7 +57,7 @@ const usePolls = () => {
         );
     };
 
-    const resolvePoll = async (pollId: number, outcome: PollSide) => {
+    const resolvePoll = async (pollId: number, outcome: number) => {
         await handleInteraction(
             web3.resolvePoll,
             [pollId, outcome],
