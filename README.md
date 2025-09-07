@@ -438,7 +438,6 @@ copies or substantial portions of the Software.
 - **⚛️ React Team**: For the amazing React framework that powers our frontend
 - **🔗 Ethers.js**: For seamless Web3 integration capabilities
 - **🎨 Tailwind CSS**: For the utility-first CSS framework
-- **🔒 OpenZeppelin**: For secure smart contract libraries
 
 ### **Open Source Libraries**
 This project was built with amazing open-source libraries:
@@ -447,11 +446,9 @@ This project was built with amazing open-source libraries:
 - **Ethers.js**: Ethereum library for Web3 interactions
 - **Tailwind CSS**: Utility-first CSS framework
 - **DaisyUI**: Tailwind CSS components
-- **Lucide React**: Beautiful icons
-- **Hardhat**: Ethereum development environment
 
 ### **Community**
-Thanks to the vibrant BlockDAG and Web3 community for inspiration, support, and valuable feedback throughout development.
+Thanks to the vibrant BlockDAG community for inspiration, support, and valuable feedback throughout development.
 
 ---
 
@@ -459,4 +456,4 @@ Thanks to the vibrant BlockDAG and Web3 community for inspiration, support, and 
 
 **🚀 Built with ❤️ for the BlockDAG Hackathon 2025**
 
-[Demo](https://predix-chain.vercel.app) • [Contract](https://explorer.blockdag.network/address/0x2819609394946F7B0588b23c2F2C5900c9B62A1a) • [Documentation](https://github.com/your-username/predix-chain/wiki)
+[Demo](https://predix-chain.vercel.app) • [Contract](https://explorer.blockdag.network/address/0x2819609394946F7B0588b23c2F2C5900c9B62A1a) • [Documentation](https://github.com/King-Khaleed/predix-chain-hackathon?tab=readme-ov-file)
