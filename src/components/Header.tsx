@@ -4,7 +4,8 @@ import { useWallet } from '../hooks/useWallet';
 import WalletButton from './WalletButton';
 
 const Header = () => {
-    const { wallet } = useWallet();
+    // BUG A FIX: Destructure all required props from the useWallet hook.
+    const { wallet, loading, connectWallet, disconnectWallet } = useWallet();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const handleDashboardClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -54,18 +55,23 @@ const Header = () => {
                         </NavLink>
                     </div>
 
-                    {/* Desktop Navigation Links */}
-                    <div className="hidden md:flex md:items-center md:space-x-4">
+                    {/* BUG B FIX: Use 'hidden md:flex' to hide on mobile and show on desktop */}
+                    <nav className="hidden md:flex md:items-center md:space-x-4">
                         {navLinks}
-                    </div>
+                    </nav>
 
-                    {/* Desktop Wallet Button */}
+                    {/* Desktop Wallet Button - BUG A FIX: Pass all necessary props */}
                     <div className="hidden md:block">
-                        <WalletButton />
+                        <WalletButton 
+                            wallet={wallet}
+                            loading={loading}
+                            connectWallet={connectWallet}
+                            disconnectWallet={disconnectWallet}
+                        />
                     </div>
 
-                    {/* Mobile Menu Button */}
-                    <div className="md:hidden flex items-center">
+                    {/* Mobile Menu Button - BUG B FIX: Use 'md:hidden' to show only on mobile */}
+                    <div className="flex items-center md:hidden">
                         <button
                             onClick={() => setIsMenuOpen(true)}
                             type="button"
@@ -74,7 +80,6 @@ const Header = () => {
                             aria-expanded={isMenuOpen}
                         >
                             <span className="sr-only">Open main menu</span>
-                            {/* Hamburger Icon */}
                             <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />
                             </svg>
@@ -87,25 +92,29 @@ const Header = () => {
             {isMenuOpen && (
                 <div className="fixed inset-0 z-50 bg-gray-900 md:hidden" id="mobile-menu">
                     <div className="flex justify-end p-4">
-                         {/* Close Button */}
                         <button
                             onClick={closeMenu}
                             type="button"
                             className="p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
                         >
                             <span className="sr-only">Close menu</span>
-                             {/* Close (X) Icon */}
                             <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
                     </div>
-                    <div className="flex flex-col items-center justify-center space-y-6 pt-10 text-center">
+                    <nav className="flex flex-col items-center justify-center space-y-6 pt-10 text-center">
                         {navLinks}
                         <div className="pt-6">
-                            <WalletButton />
+                            {/* Mobile Wallet Button - BUG A FIX: Pass all necessary props */}
+                            <WalletButton 
+                                wallet={wallet}
+                                loading={loading}
+                                connectWallet={connectWallet}
+                                disconnectWallet={disconnectWallet}
+                            />
                         </div>
-                    </div>
+                    </nav>
                 </div>
             )}
         </header>
